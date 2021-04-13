@@ -38,6 +38,13 @@ in
         end
     end
 
+    fun{Length L N}
+        case L
+        of nil then N
+        [] H|T then {Length T N+1}
+        end
+    end
+
     fun {Reverse L A}
         case L of nil then A
         [] H|T then {Reverse T H|A}
@@ -50,23 +57,23 @@ in
         end
     end
 
-    fun {CountAnswers Database Questions Counters}
-        case Database of nil then Counters
-        [] H|T then 
-            %case Questions of nil then nil
-            %[] H|T then {Count }
-            {Print H}
-            {Print Questions}
-            {Print Counters}
-            Counters
-            %{CountSub H Questions Counters}
-            %{CountAnswers T Questions Counters}
-        end
-    end
-
+    % fun {CountAnswers Database Questions Counters}
+    %     case Database of nil then Counters
+    %     [] H|T then 
+    %         %case Questions of nil then nil
+    %         %[] H|T then {Count }
+    %         {Print H}
+    %         {Print Questions}
+    %         {Print Counters}
+    %         Counters
+    %         %{CountSub H Questions Counters}
+    %         %{CountAnswers T Questions Counters}
+    %     end
+    % end
+    
     fun {GetAnswer Character Question}
         Character.Question
-    end
+    end 
 
     fun {GetName Character}
         Character.1
@@ -81,11 +88,71 @@ in
     end
 
     fun {Nth L N}
-        if N == 1 then {Head L}
-        elseif N > 1 then
-            {Nth {Tail L} N - 1}
+        if N == 0 then {Head L}
+        else {Nth {Tail L} N - 1}
         end
     end
+
+    fun {MaxPos L}
+        {MaxPosAux L 0 0 0}
+    end
+
+    fun {MaxPosAux L N Max Pos}
+        case L
+        of nil then Pos
+        [] H|T then
+            if H > Max then {MaxPosAux T N+1 H N}
+            else {MaxPosAux T N+1 Max Pos}
+            end
+        end
+    end 
+
+    fun {Count Database Question N}
+        case Database 
+        of nil then N
+        [] H|T then 
+            if H.Question == true then {Count T Question N+1}
+            else {Count T Question N}
+            end
+        end
+    end
+
+    fun {CountAnswers Database Questions Counters}
+        case Questions 
+        of nil then Counters
+        [] H|T then
+            {CountAnswers Database T {Count Database H 0}|Counters}
+        end
+    end
+
+    fun {CountTuple Database Question N}
+        case Database 
+        of nil then tup(Question:N)
+        [] H|T then 
+            if H.Question == true then {CountTuple T Question N+1}
+            else {CountTuple T Question N}
+            end
+        end
+    end
+
+    fun {CountAnswersTuple Database Questions Counters}
+        case Questions 
+        of nil then Counters
+        [] H|T then
+            {CountAnswersTuple Database T {CountTuple Database H 0}|Counters}
+        end
+    end
+
+
+    % fun {BuildDecisionTreeAux Database Counters}
+
+    % end
+
+    % fun {BuildDecisionTree Database}
+
+    % end
+
+    
 
     fun {TreeBuilder Database}
         Questions
@@ -95,12 +162,15 @@ in
     in
         Characters = {Reverse {GetAllCharacters Database nil} nil}
         Questions = {Arity Database.1}.2
-        Counters = {InitCounters Questions nil}
-        %Counters = {CountAnswers Database Questions Counters}
+        %Counters = {InitCounters Questions nil}
+        Counters ={Reverse {CountAnswers Database Questions nil} nil}
 
-        {Print Characters}
+        {Print Characters} 
         {Print Questions}
         {Print Counters}
+        {Print {CountAnswersTuple Database Questions nil}}
+        %{Print {MaxPos Counters}}
+        %{Print {Nth Questions {MaxPos Counters}}}
         {Print {GetAnswer Database.1 Questions.1}}
         {Print {GetName Database.1}}
         {Print {Nth Database 5}}
