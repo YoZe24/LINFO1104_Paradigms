@@ -38,10 +38,14 @@ in
         end
     end
 
-    fun{Length L N}
+    fun {Length L}
+        {LengthAux L 0}
+    end
+
+    fun{LengthAux L N}
         case L
         of nil then N
-        [] H|T then {Length T N+1}
+        [] H|T then {LengthAux T N+1}
         end
     end
 
@@ -107,6 +111,20 @@ in
         end
     end 
 
+    fun {Nearest L}
+        {NearestAux L 0 ({Length L} div 2) 99999999 0}
+    end
+
+    fun {NearestAux L N Size Near Pos}
+        case L
+        of nil then Pos
+        [] H|T then
+            if {Abs Size-H} < Near then {NearestAux T N+1 Size H N}
+            else {NearestAux T N+1 Size Near Pos}
+            end
+        end
+    end 
+
     fun {Count Database Question N}
         case Database 
         of nil then N
@@ -143,9 +161,47 @@ in
         end
     end
 
+    fun {Contains L E}
+        case L
+        of nil then false
+        [] H|T then
+            if H == E then true
+            else {Contains T E}
+            end
+        end
+    end
 
-    % fun {BuildDecisionTreeAux Database Counters}
+    fun {Abs I}
+        if I < 0 then ~I
+        else I
+        end
+    end
 
+    % fun {DeleteFirstAux L E NL}
+    %     case L 
+    %     of nil then NL
+    %     [] H|T then
+    %         if H == E then T|NL % erreur 1 2 3 4 5 remove 3 => 4 5 2 1, p-e faire non tail recursiv
+    %         else {DeleteFirstAux L E H|NL}
+    % end
+
+    % fun {GetCharacter Database Question Answer Characters CharactersAnswer}
+    %     case Database 
+    %     of nil then CharactersAnswer
+    %     [] H|T then
+    %         if {Contains CharactersAnswer H.1} then 
+    % end
+
+    % fun {BuildDecisionTreeAux Database Counters Questions T}
+    %     local Max in
+    %         Max = {MaxPos Counters}
+    %         {BuildDecisionTreeAux Database Counters}
+    %     end
+
+    %     case Counters 
+    %     of nil then T
+    %     [] H|T then
+    %     end
     % end
 
     % fun {BuildDecisionTree Database}
@@ -165,6 +221,7 @@ in
         %Counters = {InitCounters Questions nil}
         Counters ={Reverse {CountAnswers Database Questions nil} nil}
 
+        {Print {Nearest Counters}}
         {Print Characters} 
         {Print Questions}
         {Print Counters}
