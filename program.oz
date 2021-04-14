@@ -45,13 +45,17 @@ in
     fun{LengthAux L N}
         case L
         of nil then N
-        [] H|T then {LengthAux T N+1}
+        [] H|T then {LengthAux T N + 1}
         end
     end
 
-    fun {Reverse L A}
+    fun {Reverse L}
+        {ReverseAux L nil}
+    end
+
+    fun {ReverseAux L A}
         case L of nil then A
-        [] H|T then {Reverse T H|A}
+        [] H|T then {ReverseAux T H|A}
         end
     end 
 
@@ -60,20 +64,6 @@ in
         [] H|T then {InitCounters T 0|L}
         end
     end
-
-    % fun {CountAnswers Database Questions Counters}
-    %     case Database of nil then Counters
-    %     [] H|T then 
-    %         %case Questions of nil then nil
-    %         %[] H|T then {Count }
-    %         {Print H}
-    %         {Print Questions}
-    %         {Print Counters}
-    %         Counters
-    %         %{CountSub H Questions Counters}
-    %         %{CountAnswers T Questions Counters}
-    %     end
-    % end
     
     fun {GetAnswer Character Question}
         Character.Question
@@ -105,8 +95,8 @@ in
         case L
         of nil then Pos
         [] H|T then
-            if H > Max then {MaxPosAux T N+1 H N}
-            else {MaxPosAux T N+1 Max Pos}
+            if H > Max then {MaxPosAux T N + 1 H N}
+            else {MaxPosAux T N + 1 Max Pos}
             end
         end
     end 
@@ -119,8 +109,8 @@ in
         case L
         of nil then Pos
         [] H|T then
-            if {Abs Size-H} < Near then {NearestAux T N+1 Size H N}
-            else {NearestAux T N+1 Size Near Pos}
+            if {Abs Size - H} < Near then {NearestAux T N + 1 Size H N}
+            else {NearestAux T N + 1 Size Near Pos}
             end
         end
     end 
@@ -129,7 +119,7 @@ in
         case Database 
         of nil then N
         [] H|T then 
-            if H.Question == true then {Count T Question N+1}
+            if H.Question == true then {Count T Question N + 1}
             else {Count T Question N}
             end
         end
@@ -145,9 +135,9 @@ in
 
     fun {CountTuple Database Question N}
         case Database 
-        of nil then tup(Question:N)
+        of nil then tup(Question N)
         [] H|T then 
-            if H.Question == true then {CountTuple T Question N+1}
+            if H.Question == true then {CountTuple T Question N + 1}
             else {CountTuple T Question N}
             end
         end
@@ -158,6 +148,39 @@ in
         of nil then Counters
         [] H|T then
             {CountAnswersTuple Database T {CountTuple Database H 0}|Counters}
+        end
+    end
+
+    fun {TupleCreate Key Value}
+        tup(Key Value)
+    end
+
+    fun {TupleGetValue Tuple}
+        Tuple.2
+    end
+
+    fun {ListGetTuple L Key}
+        case L of nil then {TupleCreate null null}
+        [] H|T then 
+            if H.1 == Key then H
+            else {ListGetTuple T Key}
+            end
+        end
+    end
+
+    fun {ListGetTupleValue L Key}
+        {ListGetTuple L Key}.2
+    end
+
+    fun {Map L F} 
+        case L of nil then nil
+        [] H|T then {F H}|{Map T F}
+        end
+    end
+
+    fun {MapListTupleValue L F}
+        case L of nil then nil
+        [] H|T then {F {TupleGetValue H}}|{MapListTupleValue T F}
         end
     end
 
@@ -208,29 +231,36 @@ in
 
     % end
 
-    
-
     fun {TreeBuilder Database}
         Questions
         Name
         Counters
         Characters
+        Test
     in
-        Characters = {Reverse {GetAllCharacters Database nil} nil}
+        Characters = {Reverse {GetAllCharacters Database nil}}
         Questions = {Arity Database.1}.2
         %Counters = {InitCounters Questions nil}
-        Counters ={Reverse {CountAnswers Database Questions nil} nil}
+        Counters = {Reverse {CountAnswers Database Questions nil}}
+        
 
-        {Print {Nearest Counters}}
-        {Print Characters} 
-        {Print Questions}
-        {Print Counters}
-        {Print {CountAnswersTuple Database Questions nil}}
+        %Test = {TupleCreate aze 2}
+        %{Print {TupleGetValue Test aze}}
+        %{Print Test}
+        Test = {CountAnswersTuple Database Questions Counters}
+        %{Print {ListGetTupleValue Test 'Porte-t-il des lunettes ?'}}
+        
+        {Print Test}
+        %{Print {MapListTupleValue Test fun {$ X} X*X end}}
+        %{Print {Nearest Counters}}
+        %{Print Characters} 
+        %{Print Questions}
+        %{Print Counters}
         %{Print {MaxPos Counters}}
         %{Print {Nth Questions {MaxPos Counters}}}
-        {Print {GetAnswer Database.1 Questions.1}}
-        {Print {GetName Database.1}}
-        {Print {Nth Database 5}}
+        %{Print {GetAnswer Database.1 Questions.1}}
+        %{Print {GetName Database.1}}
+        %{Print {Nth Database 5}}
         %{PrintDatabase Database}
         leaf(nil)
     end
