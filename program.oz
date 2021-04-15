@@ -169,6 +169,22 @@ in
         end
     end
 
+    fun {GetTree Tree Reps}
+        Rep
+    in
+        case Reps
+        of nil then Tree
+        [] H|T then
+            case Tree
+            of leaf then leaf
+            [] question(1:Q true:TreeTrue false:TreeFalse) then
+                if {Nth Reps 0} == true then {GetTree TreeTrue T}
+                else {GetTree TreeFalse T}
+                end
+            end
+        end
+    end
+
     fun {ComputeCounters Database CharactersTrue QuestionsLeft}
         {Reverse {ComputeCountersAux Database CharactersTrue QuestionsLeft nil {Length CharactersTrue}}}
     end
@@ -210,13 +226,21 @@ in
 
     fun {GameDriver Tree}
         Result
+        Answer
+        OldTree
     in
         if {Label Tree} == 'leaf' then 
             Result = {ProjectLib.found Tree.1}
-        elseif {ProjectLib.askQuestion Tree.1} then
-            Result = {GameDriver Tree.true}
         else
-            Result = {GameDriver Tree.false}
+            Answer = {ProjectLib.askQuestion Tree.1}
+            if Answer == oops then
+                %OldTree = {GetOldTree }
+                %Result = {GameDriver OldTree}
+            elseif Answer then
+                Result = {GameDriver Tree.true}
+            else
+                Result = {GameDriver Tree.false}
+            end
         end
         
         if Result == false then
@@ -234,6 +258,7 @@ in
                             noGUI:NoGUI 
                             builder:BuildDecisionTree 
                             autoPlay:ListOfAnswers 
+                            oopsButton:true
                             %newCharacter:NewCharacter
                             )}
         {Application.exit 0}
