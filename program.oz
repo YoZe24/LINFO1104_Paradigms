@@ -20,7 +20,7 @@ in
         ANS = Args.'ans'
         Database = {ProjectLib.loadDatabase file DB}
         ListOfAnswers = {ProjectLib.loadCharacter file ANS}
-        NewCharacter = {ProjectLib.loadCharacter file CWD#"new_character/new_character.txt"}
+        %NewCharacter = {ProjectLib.loadCharacter file CWD#"new_character/new_character.txt"}
 
     fun {GetAllCharacters Database}
         {Reverse {GetAllCharactersAux Database nil}}
@@ -188,15 +188,17 @@ in
     end
 
     fun {GetTree Tree Reps}
-        Rep
+        Condition
     in
         case Reps
         of nil then Tree
         [] H|T then
             case Tree
             of leaf then leaf
-            [] question(1:Q true:TreeTrue false:TreeFalse) then
-                if {Nth Reps 0} then {GetTree TreeTrue T}
+            [] question(1:Q true:TreeTrue false:TreeFalse unknown:TreeUnknown) then
+                Condition = {Nth Reps 0}
+                if Condition == 'unknown' then {GetTree TreeUnknown T}
+                elseif Condition then {GetTree TreeTrue T}
                 else {GetTree TreeFalse T}
                 end
             end
@@ -216,13 +218,13 @@ in
                     CharactersTrue = {GetCharactersOnQA Database Question true Characters}
                     CharactersFalse = {GetCharactersOnQA Database Question false Characters}
 
-                    %NewCounters = {DeleteInd Counters Min}
                     NewCounters = {ComputeCounters Database CharactersTrue NewQuestions}
 
                     question(
                         1:Question 
                         true:{TreeBuilderAux Database CharactersTrue NewCounters NewQuestions}
                         false:{TreeBuilderAux Database CharactersFalse NewCounters NewQuestions}
+                        unknown:{TreeBuilderAux Database Characters NewCounters NewQuestions}
                     )
                 end 
             end
@@ -235,10 +237,18 @@ in
         Characters = {GetAllCharacters Database}
         Questions = {GetQuestions Database}
         Counters = {ComputeCounters Database Characters Questions}
-        Tree = {TreeBuilderAux Database Characters Counters Questions}
-        % {Print {GetTree Tree [true false true]}}
-        % {Print Tree}
-        Tree
+        {TreeBuilderAux Database Characters Counters Questions}
+    end
+
+    proc {PrintResults Result}
+        case Result of H|T then
+            {Print H}
+            if T \= nil then {Print ','}
+            else skip
+            end
+            {PrintResults T}
+        else skip
+        end
     end
 
     fun {GameDriver Tree}
@@ -250,7 +260,6 @@ in
         Answer
         OldTree
         NewReps
-
     in
         if {Label Tree} == 'leaf' then 
             Result = {ProjectLib.found Tree.1}
@@ -259,6 +268,8 @@ in
             if Answer == 'oops' then
                 NewReps = {DeleteInd Reps {Length Reps}-1}
                 Result = {GameDriverAux {GetTree StaticTree NewReps} StaticTree NewReps}
+            elseif Answer == 'unknown' then
+                Result = {GameDriverAux Tree.unknown StaticTree {Append Reps unknown}}
             elseif Answer then
                 Result = {GameDriverAux Tree.true StaticTree {Append Reps true}}
             else
@@ -270,6 +281,7 @@ in
             {Browse 'Wtf bro'}
         else 
             {Browse Result}
+            {PrintResults Result}
         end
 
         unit
@@ -282,6 +294,7 @@ in
                             builder:TreeBuilder 
                             autoPlay:ListOfAnswers 
                             oopsButton:true
+                            allowUnknown:true 
                             %newCharacter:NewCharacter
                             )}
         {Application.exit 0}
