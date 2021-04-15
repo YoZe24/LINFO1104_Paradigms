@@ -32,11 +32,25 @@ in
         end
     end
 
-    fun {GetAllCharacters Database L}
+    fun {GetAllCharactersAux Database L}
         case Database of nil then L
-        [] H|T then {GetAllCharacters T H.1|L}
+        [] H|T then {GetAllCharactersAux T H.1|L}
         end
     end
+    
+    fun {GetAllCharacters Database}
+        {Reverse {GetAllCharactersAux Database nil}}
+    end
+
+    fun {GetCharacterName Database Name}
+        case Database of nil then nil
+        [] H|T then 
+            if H == Name then H 
+            else {GetCharacterName T Name}
+            end
+        end
+    end
+
 
     fun {Length L}
         {LengthAux L 0}
@@ -49,9 +63,13 @@ in
         end
     end
 
-    fun {Reverse L A}
+    fun {Reverse L}
+        {ReverseAux L nil}
+    end
+
+    fun {ReverseAux L A}
         case L of nil then A
-        [] H|T then {Reverse T H|A}
+        [] H|T then {ReverseAux T H|A}
         end
     end 
 
@@ -61,20 +79,10 @@ in
         end
     end
 
-    % fun {CountAnswers Database Questions Counters}
-    %     case Database of nil then Counters
-    %     [] H|T then 
-    %         %case Questions of nil then nil
-    %         %[] H|T then {Count }
-    %         {Print H}
-    %         {Print Questions}
-    %         {Print Counters}
-    %         Counters
-    %         %{CountSub H Questions Counters}
-    %         %{CountAnswers T Questions Counters}
-    %     end
-    % end
-    
+    fun {GetQuestions Database}
+        {Arity Database.1}.2
+    end
+
     fun {GetAnswer Character Question}
         Character.Question
     end 
@@ -111,6 +119,21 @@ in
         end
     end 
 
+    fun {MinPos L}
+        {MinPosAux L 0 9999999999 0}
+    end
+
+    fun {MinPosAux L N Min Pos}
+        case L
+        of nil then Pos
+        [] H|T then
+            if H < Min then {MinPosAux T N+1 H N}
+            else {MinPosAux T N+1 Min Pos}
+            end
+        end
+    end 
+
+
     fun {Nearest L}
         {NearestAux L 0 ({Length L} div 2) 99999999 0}
     end
@@ -135,11 +158,22 @@ in
         end
     end
 
-    fun {CountAnswers Database Questions Counters}
+    fun {CountAnswersAux Database Questions Counters N}
         case Questions 
         of nil then Counters
         [] H|T then
-            {CountAnswers Database T {Count Database H 0}|Counters}
+            local Cpt in
+                Cpt = {Count Database H 0}
+                {CountAnswersAux Database T {Abs Cpt - (N-Cpt)}|Counters N}
+                % {CountAnswersAux Database T Cpt|Counters N}
+            end
+        end
+    end
+
+    fun {CountAnswers Database}
+        local Questions in
+            Questions = {GetQuestions Database}
+            {Reverse {CountAnswersAux Database Questions nil {Length Database}} }
         end
     end
 
@@ -177,74 +211,133 @@ in
         end
     end
 
-    % fun {DeleteFirstAux L E NL}
-    %     case L 
-    %     of nil then NL
+    fun {DeleteFirstElement L E}
+        case L 
+        of nil then nil
+        [] H|T then
+            if H == E then T 
+            else H|{DeleteFirstElement T E}
+            end
+        end
+    end
+
+    fun {DeleteInd L I}
+        case L 
+        of nil then nil
+        [] H|T then
+            if I == 0 then T 
+            else H|{DeleteInd T (I-1)}
+            end
+        end
+    end
+
+    fun {GetCharacter Database Question Answer Characters}
+        case Database 
+        of nil then nil
+        [] H|T then
+            if {Contains Characters H.1} then 
+                if H.Question == Answer then H.1|{GetCharacter T Question Answer Characters}
+                else {GetCharacter T Question Answer Characters}
+                end
+            else {GetCharacter T Question Answer Characters}
+            end
+        end
+    end
+
+    fun {BuildDecisionTreeAux Database Characters Counters Questions}
+        if {Length Questions} < 1 then leaf(1:Characters)
+        else    
+            if {Length Characters} < 2 then leaf(1:Characters)
+            else
+                local Min Question CharactersTrue CharactersFalse NewCounters NewQuestions in
+                    Min = {MinPos Counters}
+                    Question = {Nth Questions Min}
+                    NewCounters = {DeleteInd Counters Min}
+                    NewQuestions = {DeleteInd Questions Min}
+
+                    CharactersTrue = {GetCharacter Database Question true Characters}
+                    CharactersFalse = {GetCharacter Database Question false Characters}
+
+                    question(
+                        1:Question 
+                        true:{BuildDecisionTreeAux Database CharactersTrue NewCounters NewQuestions}
+                        false:{BuildDecisionTreeAux Database CharactersFalse NewCounters NewQuestions}
+                    )
+                end 
+            end
+        end
+    end
+
+    fun {BuildDecisionTree Database}
+        {BuildDecisionTreeAux Database {GetAllCharacters Database} {CountAnswers Database} {GetQuestions Database}}
+    end
+
+    % fun {DeleteRecordField Record FieldToDelete Fields R}
+    %     case Fields 
+    %     of nil then R
     %     [] H|T then
-    %         if H == E then T|NL % erreur 1 2 3 4 5 remove 3 => 4 5 2 1, p-e faire non tail recursiv
-    %         else {DeleteFirstAux L E H|NL}
+    %         if H == FieldToDelete then {DeleteRecordField Record FieldToDelete T R}
+    %         else R.H  {DeleteRecordField Record FieldToDelete T}
     % end
-
-    % fun {GetCharacter Database Question Answer Characters CharactersAnswer}
-    %     case Database 
-    %     of nil then CharactersAnswer
-    %     [] H|T then
-    %         if {Contains CharactersAnswer H.1} then 
-    % end
-
-    % fun {BuildDecisionTreeAux Database Counters Questions T}
-    %     local Max in
-    %         Max = {MaxPos Counters}
-    %         {BuildDecisionTreeAux Database Counters}
-    %     end
-
-    %     case Counters 
-    %     of nil then T
-    %     [] H|T then
-    %     end
-    % end
-
-    % fun {BuildDecisionTree Database}
-
-    % end
-
     
 
     fun {TreeBuilder Database}
         Questions
         Name
         Counters
+
         Characters
+        CharQ1
+        Tree
     in
-        Characters = {Reverse {GetAllCharacters Database nil} nil}
+        Characters = {GetAllCharacters Database}
         Questions = {Arity Database.1}.2
         %Counters = {InitCounters Questions nil}
-        Counters ={Reverse {CountAnswers Database Questions nil} nil}
-
-        {Print {Nearest Counters}}
-        {Print Characters} 
-        {Print Questions}
-        {Print Counters}
-        {Print {CountAnswersTuple Database Questions nil}}
-        %{Print {MaxPos Counters}}
-        %{Print {Nth Questions {MaxPos Counters}}}
-        {Print {GetAnswer Database.1 Questions.1}}
-        {Print {GetName Database.1}}
-        {Print {Nth Database 5}}
-        %{PrintDatabase Database}
-        leaf(nil)
+        %Counters ={Reverse {CountAnswers Database Questions nil} nil}
+        Counters = {CountAnswers Database}
+        CharQ1 = {GetCharacter Database Questions.1 false Characters}
+        %Tree = {BuildDecisionTreeAux Database Characters Counters Questions}
+        
+        Tree = {BuildDecisionTree Database}
+        {Print Tree}
+        
+        % {Print CharQ1}
+        % {Print Characters} 
+        % {Print Questions}
+        % {Print {DeleteFirstElement Questions 'Est-ce que c\'est une fille ?'}}
+        
+        %{Print {Nth Questions {MinPos Counters}}}
+        Tree
     end
 
     fun {GameDriver Tree}
         Result
     in
-        Result = aze
+        if {Label Tree} == 'leaf' then 
+            Result = {ProjectLib.found Tree.1}
+        elseif {ProjectLib.askQuestion Tree.1} then
+            Result = {GameDriver Tree.true}
+        else
+            Result = {GameDriver Tree.false}
+        end
+        
+        if Result == false then
+            {Browse 'Wtf bro'}
+        else 
+            {Browse Result}
+        end
+
         unit
     end
     in
-        {ProjectLib.play opts(characters:Database driver:GameDriver 
-                            noGUI:NoGUI builder:TreeBuilder 
-                            autoPlay:ListOfAnswers newCharacter:NewCharacter)}
+        {ProjectLib.play opts(
+                            characters:Database 
+                            driver:GameDriver 
+                            noGUI:false 
+                            builder:TreeBuilder 
+                            autoPlay:ListOfAnswers 
+                            %newCharacter:NewCharacter
+                            )}
         {Application.exit 0}
     end
 end
