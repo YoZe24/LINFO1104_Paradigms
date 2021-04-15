@@ -2,11 +2,6 @@ character('Ginny Weasley'
 'Est-ce que c\'est une fille ?':true
 'A-t-il des cheveux noirs ?':false
 'Porte-t-il des lunettes ?':false
-<<<<<<< HEAD:test_answers.txt
-'A-t-il des cheveux roux ?':true
-)
-=======
 'A-t-il des cheveux roux ?':false
 )
 
->>>>>>> 3e4b6ca17f7b5598da49efa3a7f5eb9ac8906615:autoplay/test_answers.txt
