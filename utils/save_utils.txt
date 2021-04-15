@@ -1,0 +1,150 @@
+proc {PrintDatabase Database}
+    case Database of nil then {Print nil}
+    [] H|T then
+        {Print H}
+        {PrintDatabase T}
+    end
+end
+
+fun {GetCharacterName Database Name}
+    case Database of nil then nil
+    [] H|T then 
+        if H == Name then H 
+        else {GetCharacterName T Name}
+        end
+    end
+end
+
+fun {InitCounters Questions L}
+    case Questions of nil then L
+    [] H|T then {InitCounters T 0|L}
+    end
+end
+
+fun {GetAnswer Character Question}
+    Character.Question
+end 
+
+fun {GetName Character}
+    Character.1
+end
+
+fun {MaxPos L}
+    {MaxPosAux L 0 0 0}
+end
+
+fun {MaxPosAux L N Max Pos}
+    case L
+    of nil then Pos
+    [] H|T then
+        if H > Max then {MaxPosAux T N + 1 H N}
+        else {MaxPosAux T N + 1 Max Pos}
+        end
+    end
+end 
+
+fun {Nearest L}
+    {NearestAux L 0 ({Length L} div 2) 99999999 0}
+end
+
+fun {NearestAux L N Size Near Pos}
+    case L
+    of nil then Pos
+    [] H|T then
+        if {Abs Size - H} < Near then {NearestAux T N + 1 Size H N}
+        else {NearestAux T N + 1 Size Near Pos}
+        end
+    end
+end 
+
+
+fun {Count Database Question N}
+    case Database 
+    of nil then N
+    [] H|T then 
+        if H.Question == true then {Count T Question N + 1}
+        else {Count T Question N}
+        end
+    end
+end
+
+fun {CountAnswersAux Database Questions Counters N}
+    case Questions 
+    of nil then Counters
+    [] H|T then
+        local Cpt in
+            Cpt = {Count Database H 0}
+            {CountAnswersAux Database T {Abs Cpt - (N-Cpt)}|Counters N}
+            % {CountAnswersAux Database T Cpt|Counters N}
+        end
+    end
+end
+
+fun {CountAnswers Database}
+    local Questions in
+        Questions = {GetQuestions Database}
+        {Reverse {CountAnswersAux Database Questions nil {Length Database}} }
+    end
+end
+
+fun {CountTuple Database Question N}
+    case Database 
+    of nil then tup(Question N)
+    [] H|T then 
+        if H.Question == true then {CountTuple T Question N + 1}
+        else {CountTuple T Question N}
+        end
+    end
+end
+
+fun {CountAnswersTuple Database Questions Counters}
+    case Questions 
+    of nil then Counters
+    [] H|T then
+        {CountAnswersTuple Database T {CountTuple Database H 0}|Counters}
+    end
+end
+
+fun {TupleCreate Key Value}
+    tup(Key Value)
+end
+
+fun {TupleGetValue Tuple}
+    Tuple.2
+end
+
+fun {ListGetTuple L Key}
+    case L of nil then {TupleCreate null null}
+    [] H|T then 
+        if H.1 == Key then H
+        else {ListGetTuple T Key}
+        end
+    end
+end
+
+fun {ListGetTupleValue L Key}
+    {ListGetTuple L Key}.2
+end
+
+fun {Map L F} 
+    case L of nil then nil
+    [] H|T then {F H}|{Map T F}
+    end
+end
+
+fun {MapListTupleValue L F}
+    case L of nil then nil
+    [] H|T then {F {TupleGetValue H}}|{MapListTupleValue T F}
+    end
+end
+
+
+fun {DeleteFirstElement L E}
+    case L 
+    of nil then nil
+    [] H|T then
+        if H == E then T 
+        else H|{DeleteFirstElement T E}
+        end
+    end
+end
