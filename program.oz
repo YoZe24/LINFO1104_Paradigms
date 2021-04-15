@@ -111,13 +111,30 @@ in
         end
     end
 
+    fun {GetCharacterOnName Database CharacterName}
+        case Database of nil then nil
+        [] H|T then 
+            if H.1 == CharacterName then
+                H
+            else {GetCharacterOnName T CharacterName}
+            end
+        end
+    end
+
+    fun {CharacterContainsQuestion Character Question}
+        {Contains {Arity Character} Question}
+    end
+
     fun {GetCharactersOnQA Database Question Answer Characters}
         case Database 
         of nil then nil
         [] H|T then
             if {Contains Characters H.1} then 
-                if H.Question == Answer then H.1|{GetCharactersOnQA T Question Answer Characters}
-                else {GetCharactersOnQA T Question Answer Characters}
+                if {CharacterContainsQuestion {GetCharacterOnName Database H.1} Question} then
+                    if H.Question == Answer then H.1|{GetCharactersOnQA T Question Answer Characters}
+                    else {GetCharactersOnQA T Question Answer Characters}
+                    end
+                else H.1|{GetCharactersOnQA T Question Answer Characters}
                 end
             else {GetCharactersOnQA T Question Answer Characters}
             end
@@ -129,7 +146,10 @@ in
         of nil then N
         [] H|T then
             if {Contains CharactersTrue H.1} then
-                if H.Question == true then {CountQuestionCharactersFiltered T CharactersTrue Question N + 1}
+                if {CharacterContainsQuestion {GetCharacterOnName Database H.1} Question} then
+                    if H.Question == true then {CountQuestionCharactersFiltered T CharactersTrue Question N + 1}
+                    else {CountQuestionCharactersFiltered T CharactersTrue Question N}
+                    end
                 else {CountQuestionCharactersFiltered T CharactersTrue Question N}
                 end
             else 
