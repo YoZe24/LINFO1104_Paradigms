@@ -336,7 +336,7 @@ in
         
         % {Print CharQ1}
         % {Print Characters} 
-        % {Print Questions}
+        {Print Questions}
         % {Print {DeleteFirstElement Questions 'Est-ce que c\'est une fille ?'}}
         
         %{Print {Nth Questions {MinPos Counters}}}
