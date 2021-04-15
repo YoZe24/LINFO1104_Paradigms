@@ -211,7 +211,7 @@ in
         {ProjectLib.play opts(
                             characters:Database 
                             driver:GameDriver 
-                            noGUI:false 
+                            noGUI:NoGUI 
                             builder:BuildDecisionTree 
                             autoPlay:ListOfAnswers 
                             %newCharacter:NewCharacter

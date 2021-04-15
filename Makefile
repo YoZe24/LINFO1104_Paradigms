@@ -2,7 +2,7 @@ OZC = ozc
 OZENGINE = ozengine
 
 DBPATH= database/database.txt
-NOGUI= "--nogui"
+NOGUI= "" # --nogui
 ANS= autoplay/test_answers.txt
 
 SRC=$(wildcard *.oz)
