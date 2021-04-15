@@ -169,22 +169,6 @@ in
         end
     end
 
-    fun {GetTree Tree Reps}
-        Rep
-    in
-        case Reps
-        of nil then Tree
-        [] H|T then
-            case Tree
-            of leaf then leaf
-            [] question(1:Q true:TreeTrue false:TreeFalse) then
-                if {Nth Reps 0} == true then {GetTree TreeTrue T}
-                else {GetTree TreeFalse T}
-                end
-            end
-        end
-    end
-
     fun {ComputeCounters Database CharactersTrue QuestionsLeft}
         {Reverse {ComputeCountersAux Database CharactersTrue QuestionsLeft nil {Length CharactersTrue}}}
     end
@@ -194,6 +178,15 @@ in
         {DeleteInd L 0}
     end
 
+    fun {Append Xs Ys}
+        if {Length Xs} == 0 then Ys|nil
+        else 
+            case Xs of nil then Ys
+            [] X|Xr then X|{Append Xr Ys}
+            end
+        end
+    end
+
     fun {GetTree Tree Reps}
         Rep
     in
@@ -203,7 +196,7 @@ in
             case Tree
             of leaf then leaf
             [] question(1:Q true:TreeTrue false:TreeFalse) then
-                if {Nth Reps 0} == true then {GetTree TreeTrue T}
+                if {Nth Reps 0} then {GetTree TreeTrue T}
                 else {GetTree TreeFalse T}
                 end
             end
@@ -243,27 +236,33 @@ in
         Questions = {GetQuestions Database}
         Counters = {ComputeCounters Database Characters Questions}
         Tree = {BuildDecisionTreeAux Database Characters Counters Questions}
-        {Print {GetTree Tree [true false true]}}
-        {Print Tree}
+        % {Print {GetTree Tree [true false true]}}
+        % {Print Tree}
         Tree
     end
 
     fun {GameDriver Tree}
+        {GameDriverAux Tree Tree nil}
+    end
+
+    fun {GameDriverAux Tree StaticTree Reps}
         Result
         Answer
         OldTree
+        NewReps
+
     in
         if {Label Tree} == 'leaf' then 
             Result = {ProjectLib.found Tree.1}
         else
             Answer = {ProjectLib.askQuestion Tree.1}
-            if Answer == oops then
-                %OldTree = {GetOldTree }
-                %Result = {GameDriver OldTree}
+            if Answer == 'oops' then
+                NewReps = {DeleteInd Reps {Length Reps}-1}
+                Result = {GameDriverAux {GetTree StaticTree NewReps} StaticTree NewReps}
             elseif Answer then
-                Result = {GameDriver Tree.true}
+                Result = {GameDriverAux Tree.true StaticTree {Append Reps true}}
             else
-                Result = {GameDriver Tree.false}
+                Result = {GameDriverAux Tree.false StaticTree {Append Reps false}}
             end
         end
         
