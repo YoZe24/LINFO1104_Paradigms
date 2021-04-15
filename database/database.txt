@@ -50,4 +50,3 @@ character('Jean Didier'
 'A-t-il des cheveux roux ?':true
 )
 ]
-

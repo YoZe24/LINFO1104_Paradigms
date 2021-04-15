@@ -1,4 +1,4 @@
-character('Hermione Granger'
+character('Ginny Weasley'
 'Est-ce que c\'est une fille ?':true
 'A-t-il des cheveux noirs ?':false
 'Porte-t-il des lunettes ?':false

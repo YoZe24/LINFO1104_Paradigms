@@ -189,6 +189,27 @@ in
         {Reverse {ComputeCountersAux Database CharactersTrue QuestionsLeft nil {Length CharactersTrue}}}
     end
 
+    fun {Pop L Poped}
+        Poped = {Nth L 0}
+        {DeleteInd L 0}
+    end
+
+    fun {GetTree Tree Reps}
+        Rep
+    in
+        case Reps
+        of nil then Tree
+        [] H|T then
+            case Tree
+            of leaf then leaf
+            [] question(1:Q true:TreeTrue false:TreeFalse) then
+                if {Nth Reps 0} == true then {GetTree TreeTrue T}
+                else {GetTree TreeFalse T}
+                end
+            end
+        end
+    end 
+
     fun {BuildDecisionTreeAux Database Characters Counters Questions}
         if {Length Questions} < 1 then leaf(1:Characters)
         else    
@@ -216,12 +237,15 @@ in
     end
 
     fun {BuildDecisionTree Database}
-        local Characters Questions Counters in
-            Characters = {GetAllCharacters Database}
-            Questions = {GetQuestions Database}
-            Counters = {ComputeCounters Database Characters Questions}
-            {BuildDecisionTreeAux Database Characters Counters Questions}
-        end
+        Characters Questions Counters Tree 
+    in
+        Characters = {GetAllCharacters Database}
+        Questions = {GetQuestions Database}
+        Counters = {ComputeCounters Database Characters Questions}
+        Tree = {BuildDecisionTreeAux Database Characters Counters Questions}
+        {Print {GetTree Tree [true false true]}}
+        {Print Tree}
+        Tree
     end
 
     fun {GameDriver Tree}
