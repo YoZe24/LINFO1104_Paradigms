@@ -203,7 +203,7 @@ in
         end
     end 
 
-    fun {BuildDecisionTreeAux Database Characters Counters Questions}
+    fun {TreeBuilderAux Database Characters Counters Questions}
         if {Length Questions} < 1 then leaf(1:Characters)
         else    
             if {Length Characters} < 2 then leaf(1:Characters)
@@ -221,21 +221,21 @@ in
 
                     question(
                         1:Question 
-                        true:{BuildDecisionTreeAux Database CharactersTrue NewCounters NewQuestions}
-                        false:{BuildDecisionTreeAux Database CharactersFalse NewCounters NewQuestions}
+                        true:{TreeBuilderAux Database CharactersTrue NewCounters NewQuestions}
+                        false:{TreeBuilderAux Database CharactersFalse NewCounters NewQuestions}
                     )
                 end 
             end
         end
     end
 
-    fun {BuildDecisionTree Database}
+    fun {TreeBuilder Database}
         Characters Questions Counters Tree 
     in
         Characters = {GetAllCharacters Database}
         Questions = {GetQuestions Database}
         Counters = {ComputeCounters Database Characters Questions}
-        Tree = {BuildDecisionTreeAux Database Characters Counters Questions}
+        Tree = {TreeBuilderAux Database Characters Counters Questions}
         % {Print {GetTree Tree [true false true]}}
         % {Print Tree}
         Tree
@@ -279,7 +279,7 @@ in
                             characters:Database 
                             driver:GameDriver 
                             noGUI:NoGUI 
-                            builder:BuildDecisionTree 
+                            builder:TreeBuilder 
                             autoPlay:ListOfAnswers 
                             oopsButton:true
                             %newCharacter:NewCharacter
