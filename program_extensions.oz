@@ -214,23 +214,45 @@ in
         else    
             if {Length Characters} < 2 then leaf(1:Characters)
             else
-                local Min Question CharactersTrue CharactersFalse NewCounters NewQuestions in
+                local Min Question CharactersTrue CharactersFalse NewCountersTrue NewCountersFalse NewCounters NewQuestions in
                     Min = {MinPos Counters}
                     Question = {Nth Questions Min}
-                    NewQuestions = {DeleteInd Questions Min}
+                    if {Nth Counters Min} == {Length Characters} then leaf(1:Characters)
+                    else
+                        NewQuestions = {DeleteInd Questions Min}
 
-                    CharactersTrue = {GetCharactersOnQA Database Question true Characters}
-                    CharactersFalse = {GetCharactersOnQA Database Question false Characters}
+                        CharactersTrue = {GetCharactersOnQA Database Question true Characters}
+                        CharactersFalse = {GetCharactersOnQA Database Question false Characters}
 
-                    NewCounters = {ComputeCounters Database CharactersTrue NewQuestions}
+                        NewCountersTrue = {ComputeCounters Database CharactersTrue NewQuestions}
+                        NewCountersFalse = {ComputeCounters Database CharactersFalse NewQuestions}
+                        NewCounters = {ComputeCounters Database Characters NewQuestions}
 
-                    question(
-                        1:Question 
-                        true:{TreeBuilderAux Database CharactersTrue NewCounters NewQuestions}
-                        false:{TreeBuilderAux Database CharactersFalse NewCounters NewQuestions}
-                        unknown:{TreeBuilderAux Database Characters NewCounters NewQuestions}
-                    )
+                        question(
+                            1:Question 
+                            true:{TreeBuilderAux Database CharactersTrue NewCountersTrue NewQuestions}
+                            false:{TreeBuilderAux Database CharactersFalse NewCountersFalse NewQuestions}
+                            unknown:{TreeBuilderAux Database Characters NewCounters NewQuestions}
+                        )
+                    end
                 end 
+                % local Min Question CharactersTrue CharactersFalse NewCounters NewQuestions in
+                %     Min = {MinPos Counters}
+                %     Question = {Nth Questions Min}
+                %     NewQuestions = {DeleteInd Questions Min}
+
+                %     CharactersTrue = {GetCharactersOnQA Database Question true Characters}
+                %     CharactersFalse = {GetCharactersOnQA Database Question false Characters}
+
+                %     NewCounters = {ComputeCounters Database CharactersTrue NewQuestions}
+
+                %     question(
+                %         1:Question 
+                %         true:{TreeBuilderAux Database CharactersTrue NewCounters NewQuestions}
+                %         false:{TreeBuilderAux Database CharactersFalse NewCounters NewQuestions}
+                %         unknown:{TreeBuilderAux Database Characters NewCounters NewQuestions}
+                %     )
+                % end 
             end
         end
     end
