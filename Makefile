@@ -2,7 +2,7 @@ OZC = ozc
 OZENGINE = ozengine
 
 DBPATH= database/database.txt
-NOGUI= "" # --nogui
+NOGUI= "--nogui" # --nogui
 ANS= autoplay/test_answers.txt
 
 SRC=$(wildcard *.oz)
@@ -12,9 +12,13 @@ OZFLAGS = --nowarnunused
 
 all: $(OBJ)
 
-run: all
-	@echo RUN program.ozf
-	@$(OZENGINE) program.ozf --db $(DBPATH) $(NOGUI) --ans $(ANS)
+run_basic: all
+	@echo RUN program_basic.ozf
+	@$(OZENGINE) program_basic.ozf --db $(DBPATH) $(NOGUI) --ans $(ANS)
+
+run_extensions: all
+	@echo RUN program_extensions.ozf
+	@$(OZENGINE) program_extensions.ozf --db $(DBPATH) $(NOGUI) --ans $(ANS)
 
 run_example: all
 	@echo RUN example_code/Example.ozf

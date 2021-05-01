@@ -5,6 +5,7 @@ import
     OS
     System
     Application
+    Open
 define
     CWD = {Atom.toString {OS.getCWD}}#"/"
     Browse = proc {$ Buf} {Browser.browse Buf} end
@@ -13,6 +14,9 @@ define
         'nogui'(single type:bool default:false optional:true)
         'db'(single type:string default:CWD#"database/database.txt")
         'ans'(single type:string default:CWD#"autoplay/test_answers.txt"))} 
+    
+    Output = {New Open.file init(name: stdout
+				       flags: [write create truncate text])}
 in 
     local
         NoGUI = Args.'nogui'
@@ -251,6 +255,18 @@ in
         end
     end
 
+    proc {WriteListToFile L F}
+        case L
+        of H|nil then
+            {F write(vs:H)}
+        []H|T then
+            {F write(vs:H#",")}
+            {WriteListToFile T F}
+        else
+            skip
+        end
+    end
+
     fun {GameDriver Tree}
         {GameDriverAux Tree Tree nil}
     end
@@ -281,7 +297,7 @@ in
             {Browse 'Wtf bro'}
         else 
             {Browse Result}
-            {PrintResults Result}
+            {WriteListToFile Result Output}
         end
 
         unit
