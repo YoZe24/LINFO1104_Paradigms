@@ -226,7 +226,7 @@ in
 
                         NewCountersTrue = {ComputeCounters Database CharactersTrue NewQuestions}
                         NewCountersFalse = {ComputeCounters Database CharactersFalse NewQuestions}
-                        NewCounters = {ComputeCounters Database Characters NewQuestions}
+                        NewCounters = {DeleteInd Counters Min}
 
                         question(
                             1:Question 
@@ -311,7 +311,7 @@ in
         {ProjectLib.play opts(
                             characters:Database 
                             driver:GameDriver 
-                            noGUI:NoGUI 
+                            noGUI:false 
                             builder:TreeBuilder 
                             autoPlay:ListOfAnswers 
                             oopsButton:true

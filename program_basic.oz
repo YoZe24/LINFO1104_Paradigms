@@ -191,23 +191,6 @@ in
         end
     end
 
-    fun {GetTree Tree Reps}
-        Condition
-    in
-        case Reps
-        of nil then Tree
-        [] H|T then
-            case Tree
-            of leaf then leaf
-            [] question(1:Q true:TreeTrue false:TreeFalse) then
-                Condition = {Nth Reps 0}
-                if Condition then {GetTree TreeTrue T}
-                else {GetTree TreeFalse T}
-                end
-            end
-        end
-    end 
-
     fun {TreeBuilderAux Database Characters Counters Questions}
         if {Length Questions} < 1 then leaf(1:Characters)
         else    
@@ -285,10 +268,7 @@ in
             Result = {ProjectLib.found Tree.1}
         else
             Answer = {ProjectLib.askQuestion Tree.1}
-            if Answer == 'oops' then
-                NewReps = {DeleteInd Reps {Length Reps}-1}
-                Result = {GameDriverAux {GetTree StaticTree NewReps} StaticTree NewReps}
-            elseif Answer then
+            if Answer then
                 Result = {GameDriverAux Tree.true StaticTree {Append Reps true}}
             else
                 Result = {GameDriverAux Tree.false StaticTree {Append Reps false}}
