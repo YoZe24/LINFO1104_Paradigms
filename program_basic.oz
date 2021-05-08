@@ -192,30 +192,27 @@ in
     end
 
     fun {TreeBuilderAux Database Characters Counters Questions}
-        if {Length Questions} < 1 then leaf(1:Characters)
-        else    
-            if {Length Characters} < 2 then leaf(1:Characters)
-            else
-                local Min Question CharactersTrue CharactersFalse NewCountersTrue NewCountersFalse NewQuestions in
-                    Min = {MinPos Counters}
-                    Question = {Nth Questions Min}
-                    if {Nth Counters Min} == {Length Characters} then leaf(1:Characters)
-                    else
-                        NewQuestions = {DeleteInd Questions Min}
+        if {Or {Length Questions} < 1 {Length Characters} < 2 } then leaf(1:Characters)
+        else
+            local Min Question CharactersTrue CharactersFalse NewCountersTrue NewCountersFalse NewQuestions in
+                Min = {MinPos Counters}
+                Question = {Nth Questions Min}
+                if {Nth Counters Min} == {Length Characters} then leaf(1:Characters)
+                else
+                    NewQuestions = {DeleteInd Questions Min}
 
-                        CharactersTrue = {GetCharactersOnQuestion Database Question true Characters}
-                        CharactersFalse = {GetCharactersOnQuestion Database Question false Characters}
+                    CharactersTrue = {GetCharactersOnQuestion Database Question true Characters}
+                    CharactersFalse = {GetCharactersOnQuestion Database Question false Characters}
 
-                        NewCountersTrue = {ComputeCounters Database CharactersTrue NewQuestions}
-                        NewCountersFalse = {ComputeCounters Database CharactersFalse NewQuestions}
+                    NewCountersTrue = {ComputeCounters Database CharactersTrue NewQuestions}
+                    NewCountersFalse = {ComputeCounters Database CharactersFalse NewQuestions}
 
-                        question(
-                            1:Question 
-                            true:{TreeBuilderAux Database CharactersTrue NewCountersTrue NewQuestions}
-                            false:{TreeBuilderAux Database CharactersFalse NewCountersFalse NewQuestions}
-                        )
-                    end
-                end 
+                    question(
+                        1:Question 
+                        true:{TreeBuilderAux Database CharactersTrue NewCountersTrue NewQuestions}
+                        false:{TreeBuilderAux Database CharactersFalse NewCountersFalse NewQuestions}
+                    )
+                end
             end
         end
     end
