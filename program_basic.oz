@@ -129,18 +129,18 @@ in
         {Contains {Arity Character} Question}
     end
 
-    fun {GetCharactersOnQA Database Question Answer Characters}
+    fun {GetCharactersOnQuestion Database Question Answer Characters}
         case Database 
         of nil then nil
         [] H|T then
             if {Contains Characters H.1} then 
                 if {CharacterContainsQuestion {GetCharacterOnName Database H.1} Question} then
-                    if H.Question == Answer then H.1|{GetCharactersOnQA T Question Answer Characters}
-                    else {GetCharactersOnQA T Question Answer Characters}
+                    if H.Question == Answer then H.1|{GetCharactersOnQuestion T Question Answer Characters}
+                    else {GetCharactersOnQuestion T Question Answer Characters}
                     end
-                else H.1|{GetCharactersOnQA T Question Answer Characters}
+                else H.1|{GetCharactersOnQuestion T Question Answer Characters}
                 end
-            else {GetCharactersOnQA T Question Answer Characters}
+            else {GetCharactersOnQuestion T Question Answer Characters}
             end
         end
     end
@@ -220,8 +220,8 @@ in
                     else
                         NewQuestions = {DeleteInd Questions Min}
 
-                        CharactersTrue = {GetCharactersOnQA Database Question true Characters}
-                        CharactersFalse = {GetCharactersOnQA Database Question false Characters}
+                        CharactersTrue = {GetCharactersOnQuestion Database Question true Characters}
+                        CharactersFalse = {GetCharactersOnQuestion Database Question false Characters}
 
                         NewCountersTrue = {ComputeCounters Database CharactersTrue NewQuestions}
                         NewCountersFalse = {ComputeCounters Database CharactersFalse NewQuestions}
@@ -296,7 +296,7 @@ in
         end
         
         if Result == false then
-            {Browse 'Wtf bro'}
+            {Browse 'What’s going on ? I thought I could’nt make mistakes !'}
         else 
             {Browse Result}
             {WriteListToFile Result Output}
@@ -308,7 +308,7 @@ in
         {ProjectLib.play opts(
                             characters:Database 
                             driver:GameDriver 
-                            noGUI:NoGUI 
+                            noGUI:false 
                             builder:TreeBuilder 
                             autoPlay:ListOfAnswers 
                             oopsButton:false

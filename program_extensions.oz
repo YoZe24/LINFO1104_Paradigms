@@ -236,23 +236,6 @@ in
                         )
                     end
                 end 
-                % local Min Question CharactersTrue CharactersFalse NewCounters NewQuestions in
-                %     Min = {MinPos Counters}
-                %     Question = {Nth Questions Min}
-                %     NewQuestions = {DeleteInd Questions Min}
-
-                %     CharactersTrue = {GetCharactersOnQA Database Question true Characters}
-                %     CharactersFalse = {GetCharactersOnQA Database Question false Characters}
-
-                %     NewCounters = {ComputeCounters Database CharactersTrue NewQuestions}
-
-                %     question(
-                %         1:Question 
-                %         true:{TreeBuilderAux Database CharactersTrue NewCounters NewQuestions}
-                %         false:{TreeBuilderAux Database CharactersFalse NewCounters NewQuestions}
-                %         unknown:{TreeBuilderAux Database Characters NewCounters NewQuestions}
-                %     )
-                % end 
             end
         end
     end
@@ -316,7 +299,7 @@ in
         end
         
         if Result == false then
-            {Browse 'Wtf bro'}
+            {Browse 'What’s going on ? I thought I could’nt make mistakes !'}
         else 
             {Browse Result}
             {WriteListToFile Result Output}
